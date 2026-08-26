@@ -1,0 +1,6 @@
+{
+  "name": "Student Pulse - Academic Feedback & Faculty Intelligence",
+  "description": "A college course feedback system featuring student feedback submission, sentiment analytics, and faculty intelligence dashboards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
