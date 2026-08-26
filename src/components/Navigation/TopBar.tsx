@@ -16,11 +16,15 @@ export const TopBar: React.FC<TopBarProps> = ({
   onBack,
   title,
 }) => {
-  const { currentView, setCurrentView, userRole, setUserRole, showToast } = useApp();
+  const { currentView, setCurrentView, userRole, setUserRole, showToast, startFeedback } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavClick = (view: AppView) => {
-    setCurrentView(view);
+    if (view === 'feedback') {
+      startFeedback('cs410', 1);
+    } else {
+      setCurrentView(view);
+    }
     setMobileMenuOpen(false);
   };
 

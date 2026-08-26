@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Sidebar } from './components/Navigation/Sidebar';
 import { TopBar } from './components/Navigation/TopBar';
@@ -9,6 +9,66 @@ import { CoursesView } from './components/Courses/CoursesView';
 import { ProfileView } from './components/Profile/ProfileView';
 import { Toast } from './components/Shared/Toast';
 import { ActivityModal } from './components/Activity/ActivityModal';
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = {
+      hasError: false,
+      error: null,
+    };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Application caught error:', error, errorInfo);
+  }
+
+  handleReset = () => {
+    localStorage.removeItem('sp_courses_v2');
+    localStorage.removeItem('sp_submissions_v1');
+    localStorage.removeItem('sp_activities_v1');
+    window.location.reload();
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-[#fcf8ff] flex items-center justify-center p-6 text-[#181445]">
+          <div className="max-w-md w-full glass-panel p-8 rounded-2xl border border-[#ba1a1a]/20 shadow-lg text-center space-y-5">
+            <div className="w-14 h-14 rounded-full bg-[#ba1a1a]/10 text-[#ba1a1a] flex items-center justify-center mx-auto">
+              <span className="material-symbols-outlined text-[28px]">error_outline</span>
+            </div>
+            <h2 className="font-epilogue text-2xl font-bold">Something went wrong</h2>
+            <p className="font-manrope text-sm text-[#464555]">
+              {this.state.error?.message || 'An unexpected render error occurred.'}
+            </p>
+            <button
+              onClick={this.handleReset}
+              className="w-full bg-[#3525cd] text-white py-3 rounded-xl font-jetbrains text-xs font-semibold hover:bg-[#4f46e5] transition-all"
+            >
+              Reset Session & Reload
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const AppContent: React.FC = () => {
   const { currentView } = useApp();
@@ -66,9 +126,11 @@ const AppContent: React.FC = () => {
 
 export function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <AppContent />
+      </AppProvider>
+    </ErrorBoundary>
   );
 }
 

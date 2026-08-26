@@ -8,10 +8,10 @@ interface SummaryStepViewProps {
 export const SummaryStepView: React.FC<SummaryStepViewProps> = ({ onEditStep }) => {
   const {
     activeCourse,
-    ratings,
-    reflectionText,
+    ratings = { teaching: 3, content: 4, engagement: 4 },
+    reflectionText = '',
     submitCurrentFeedback,
-    formErrors,
+    formErrors = {},
   } = useApp();
 
   const [expandedQuestions, setExpandedQuestions] = useState<Record<number, boolean>>({
@@ -26,18 +26,21 @@ export const SummaryStepView: React.FC<SummaryStepViewProps> = ({ onEditStep }) 
   };
 
   // Compute calculated metrics
-  const avgRating = (ratings.teaching + ratings.content + ratings.engagement) / 3;
-  const courseContentScore = Number((ratings.content * 0.96 + 0.4).toFixed(1));
-  const teachingQualityScore = Number((ratings.teaching * 0.9 + 0.5).toFixed(1));
-  const engagementScore = Number((ratings.engagement * 0.85 + 0.6).toFixed(1));
+  const tRating = ratings?.teaching || 3;
+  const cRating = ratings?.content || 4;
+  const eRating = ratings?.engagement || 4;
+  const avgRating = (tRating + cRating + eRating) / 3;
+  const courseContentScore = Number((cRating * 0.96 + 0.4).toFixed(1));
+  const teachingQualityScore = Number((tRating * 0.9 + 0.5).toFixed(1));
+  const engagementScore = Number((eRating * 0.85 + 0.6).toFixed(1));
 
   let sentimentTitle = 'Highly Positive';
   if (avgRating < 2.8) sentimentTitle = 'Constructive';
   else if (avgRating < 3.7) sentimentTitle = 'Neutral';
   else if (avgRating < 4.5) sentimentTitle = 'Positive';
 
-  const hasValidationErrors = Object.keys(formErrors).length > 0;
-  const isReflectionValid = reflectionText.trim().length >= 20;
+  const hasValidationErrors = Object.keys(formErrors || {}).length > 0;
+  const isReflectionValid = (reflectionText || '').trim().length >= 20;
 
   const handleSubmit = () => {
     submitCurrentFeedback();

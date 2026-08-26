@@ -17,7 +17,7 @@ const RATING_OPTIONS: RatingOption[] = [
 ];
 
 export const FeedbackStepView: React.FC<FeedbackStepViewProps> = ({ step, onNext, onPrev }) => {
-  const { ratings, setRating, formErrors, clearFieldError } = useApp();
+  const { ratings, setRating, formErrors = {}, clearFieldError } = useApp();
 
   const getQuestionInfo = (stepNum: number) => {
     switch (stepNum) {
@@ -26,7 +26,7 @@ export const FeedbackStepView: React.FC<FeedbackStepViewProps> = ({ step, onNext
           category: 'teaching' as const,
           stepLabel: 'Question 1 of 4 • Teaching Quality',
           question: 'How effectively did the instructor explain difficult concepts?',
-          currentRating: ratings.teaching,
+          currentRating: ratings?.teaching || 3,
           description: 'Evaluate pedagogical clarity, responsiveness to student questions, and pacing.',
         };
       case 2:
@@ -34,7 +34,7 @@ export const FeedbackStepView: React.FC<FeedbackStepViewProps> = ({ step, onNext
           category: 'content' as const,
           stepLabel: 'Question 2 of 4 • Course Content',
           question: 'How well-structured and relevant were the course materials & lab assignments?',
-          currentRating: ratings.content,
+          currentRating: ratings?.content || 4,
           description: 'Evaluate curriculum relevance, homework alignment, and laboratory utility.',
         };
       case 3:
@@ -42,7 +42,7 @@ export const FeedbackStepView: React.FC<FeedbackStepViewProps> = ({ step, onNext
           category: 'engagement' as const,
           stepLabel: 'Question 3 of 4 • Engagement',
           question: 'How engaging and interactive were the lectures, discussions, and class exercises?',
-          currentRating: ratings.engagement,
+          currentRating: ratings?.engagement || 4,
           description: 'Evaluate classroom environment, collaborative activities, and interactive discussions.',
         };
       default:
@@ -50,18 +50,20 @@ export const FeedbackStepView: React.FC<FeedbackStepViewProps> = ({ step, onNext
           category: 'teaching' as const,
           stepLabel: 'Question 1 of 4 • Teaching Quality',
           question: 'How effectively did the instructor explain difficult concepts?',
-          currentRating: ratings.teaching,
+          currentRating: ratings?.teaching || 3,
           description: 'Evaluate pedagogical clarity, responsiveness to student questions, and pacing.',
         };
     }
   };
 
   const { category, stepLabel, question, currentRating, description } = getQuestionInfo(step);
-  const errorMessage = formErrors[category];
+  const errorMessage = formErrors?.[category];
 
   const handleSelectRating = (value: RatingValue) => {
     setRating(category, value);
-    clearFieldError(category);
+    if (clearFieldError) {
+      clearFieldError(category);
+    }
   };
 
   return (

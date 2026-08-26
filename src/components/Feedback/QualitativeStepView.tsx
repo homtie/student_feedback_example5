@@ -8,15 +8,15 @@ interface QualitativeStepViewProps {
 
 export const QualitativeStepView: React.FC<QualitativeStepViewProps> = ({ onNext, onPrev }) => {
   const {
-    reflectionText,
+    reflectionText = '',
     setReflectionText,
     lastSavedTime,
     saveDraft,
-    formErrors,
+    formErrors = {},
     clearFieldError,
   } = useApp();
 
-  const errorMessage = formErrors.reflectionText;
+  const errorMessage = formErrors?.reflectionText;
   const charCount = reflectionText.length;
   const isMinMet = reflectionText.trim().length >= 20;
 
@@ -28,7 +28,7 @@ export const QualitativeStepView: React.FC<QualitativeStepViewProps> = ({ onNext
       newText = `${promptText} `;
     }
     setReflectionText(newText);
-    if (newText.trim().length >= 20) {
+    if (newText.trim().length >= 20 && clearFieldError) {
       clearFieldError('reflectionText');
     }
   };
@@ -36,7 +36,7 @@ export const QualitativeStepView: React.FC<QualitativeStepViewProps> = ({ onNext
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value.slice(0, 2000);
     setReflectionText(val);
-    if (val.trim().length >= 20) {
+    if (val.trim().length >= 20 && clearFieldError) {
       clearFieldError('reflectionText');
     }
   };
